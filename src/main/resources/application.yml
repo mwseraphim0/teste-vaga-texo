@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: teste-texo
+
+  datasource:
+    url: jdbc:h2:mem:dbmovie
+    username: sa
+    password: admin
+    driverClassName: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+
+  h2:
+    console:
+      enabled: true
+      settings:
+        trace: false
+        web-allow-others: false
+      path: /h2
+
+
+server:
+  port: 9002
+  error:
+    include-message: always
