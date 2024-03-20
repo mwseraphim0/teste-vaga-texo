@@ -16,7 +16,5 @@ public class AwardsResponseDto {
     private String producer;
     private Integer interval;
     private Integer previousWin;
-    private String titlePreviousWinMovie;
     private Integer followingWin;
-    private String titleFollowingWinMovie;
 }

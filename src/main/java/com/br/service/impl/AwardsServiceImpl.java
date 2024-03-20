@@ -64,22 +64,35 @@ public class AwardsServiceImpl implements AwardsService {
                     mapProduceMovie.put(producer.getName(), listMovie);
                 }));
 
-        List<AwardsResponseDto> listAwards = mapProduceMovie.entrySet().stream()
+        List<AwardsResponseDto> listAwards = new ArrayList<>();
+        mapProduceMovie.entrySet().stream()
                 .filter(producerMovieFilter -> producerMovieFilter.getValue().size() > 1)
-                .map(producerMovieMap -> {
+                .forEach(producerMovieMap -> {
                     String producerName = producerMovieMap.getKey();
-                    MovieResponseDTO maxMovieResponseDTO = producerMovieMap.getValue().stream().max(Comparator.comparing(MovieResponseDTO::getYear)).get();
-                    MovieResponseDTO minMovieResponseDTO = producerMovieMap.getValue().stream().min(Comparator.comparing(MovieResponseDTO::getYear)).get();
 
-                    return AwardsResponseDto.builder()
-                            .producer(producerName)
-                            .interval(Math.subtractExact(maxMovieResponseDTO.getYear(), minMovieResponseDTO.getYear()))
-                            .previousWin(minMovieResponseDTO.getYear())
-                            .titlePreviousWinMovie(minMovieResponseDTO.getTitle())
-                            .followingWin(maxMovieResponseDTO.getYear())
-                            .titleFollowingWinMovie(maxMovieResponseDTO.getTitle())
-                            .build();
-                }).toList();
+                    List<MovieResponseDTO> listMoviesCount = producerMovieMap.getValue().stream()
+                            .sorted(Comparator.comparing(MovieResponseDTO::getYear))
+                            .toList();
+
+                    listMoviesCount.stream()
+                            .reduce((first, second) -> {
+                                AwardsResponseDto build = AwardsResponseDto.builder()
+                                        .producer(producerName)
+                                        .interval(second.getYear() - first.getYear())
+                                        .previousWin(first.getYear())
+                                        .followingWin(second.getYear())
+                                        .build();
+                                listAwards.add(build);
+                                return second;
+                            });
+                });
+
+        if (listAwards.isEmpty()) {
+            return AwardRangeResponseDto.builder()
+                    .max(new ArrayList<>())
+                    .min(new ArrayList<>())
+                    .build();
+        }
 
         AwardsResponseDto maxProducerAwards = listAwards.stream().max(Comparator.comparing(AwardsResponseDto::getInterval)).get();
         AwardsResponseDto minProducerAwards = listAwards.stream().min(Comparator.comparing(AwardsResponseDto::getInterval)).get();

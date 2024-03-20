@@ -99,7 +99,13 @@ public class Setup {
         Iterable<CSVRecord> csvRecords = csvParser.getRecords();
 
         csvRecords.forEach(movieRecord -> {
-            MovieVO movieSave = MovieVO.builder().year(movieRecord.get("year")).title(movieRecord.get("title")).studios(movieRecord.get("studios")).producers(movieRecord.get("producers")).winner(movieRecord.get("winner").equalsIgnoreCase("yes")).build();
+            MovieVO movieSave = MovieVO.builder()
+                    .year(movieRecord.get("year"))
+                    .title(movieRecord.get("title"))
+                    .studios(movieRecord.get("studios"))
+                    .producers(movieRecord.get("producers"))
+                    .winner(movieRecord.get("winner").equalsIgnoreCase("yes"))
+                    .build();
             listMovieSave.add(movieSave);
         });
         return listMovieSave;
